@@ -1,126 +1,59 @@
 $(document).ready(function() {
-    // Função para buscar e preencher o endereço automaticamente
-    $('#buscarEndereco').on('click', function() {
-        const cep = $('#endereco').val().replace(/\D/g, '');
-        if (cep.length === 8) {
-            $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(data) {
-                if (!data.erro) {
-                    $('#endereco').val(`${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`);
-                } else {
-                    alert('CEP não encontrado');
-                }
-            });
-        } else {
-            alert('CEP inválido');
-        }
+    // Adicionar novo produto
+    $('#addProduct').click(function() {
+        let newRow = `<tr>
+            <td><input type="text" class="form-control" required></td>
+            <td><input type="text" class="form-control" required></td>
+            <td><input type="number" class="form-control" required></td>
+            <td><input type="number" class="form-control" required></td>
+            <td><input type="number" class="form-control" readonly></td>
+        </tr>`;
+        $('#productsTable tbody').append(newRow);
     });
 
-    // Função para calcular o valor total dos produtos
-    $('#productsTable').on('input', '.product-quantity, .product-unit-price', function() {
-        const $row = $(this).closest('tr');
-        const quantity = parseFloat($row.find('.product-quantity').val()) || 0;
-        const unitPrice = parseFloat($row.find('.product-unit-price').val()) || 0;
-        const total = quantity * unitPrice;
-        $row.find('.product-total').val(total.toFixed(2));
+    // Adicionar novo anexo
+    $('#addAttachment').click(function() {
+        let newRow = `<tr>
+            <td><input type="file" class="form-control" required></td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm">Excluir</button>
+                <button type="button" class="btn btn-info btn-sm">Visualizar</button>
+            </td>
+        </tr>`;
+        $('#attachmentsTable tbody').append(newRow);
     });
 
-    // Adicionar nova linha na tabela de produtos
-    $('#addProduct').on('click', function() {
-        $('#productsTable tbody').append(`
-            <tr>
-                <td><input type="text" class="form-control product-description" required></td>
-                <td><input type="text" class="form-control product-unit" required></td>
-                <td><input type="number" class="form-control product-quantity" required></td>
-                <td><input type="number" class="form-control product-unit-price" required></td>
-                <td><input type="text" class="form-control product-total" readonly></td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm remove-product">Remover</button>
-                </td>
-            </tr>
-        `);
-    });
-
-    // Remover produto da tabela
-    $('#productsTable').on('click', '.remove-product', function() {
-        $(this).closest('tr').remove();
-    });
-
-    // Gerenciar anexos
-    $('#fileUpload').on('change', function() {
-        const files = $(this)[0].files;
-        const $tableBody = $('#attachmentsTable tbody');
-        $tableBody.empty();
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const fileData = event.target.result;
-                const fileName = file.name;
-                const fileUrl = URL.createObjectURL(file);
-                $tableBody.append(`
-                    <tr>
-                        <td>${fileName}</td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm delete-attachment" data-file-url="${fileUrl}">Excluir</button>
-                            <a href="${fileUrl}" download class="btn btn-info btn-sm">Visualizar</a>
-                        </td>
-                    </tr>
-                `);
-            };
-            reader.readAsDataURL(file);
-        });
+    // Calcular valor total
+    $('#productsTable').on('input', 'input[type="number"]', function() {
+        let row = $(this).closest('tr');
+        let quantity = parseFloat(row.find('input:eq(2)').val());
+        let unitPrice = parseFloat(row.find('input:eq(3)').val());
+        let total = quantity * unitPrice;
+        row.find('input:eq(4)').val(total.toFixed(2));
     });
 
     // Excluir anexo
-    $('#attachmentsTable').on('click', '.delete-attachment', function() {
+    $('#attachmentsTable').on('click', '.btn-danger', function() {
         $(this).closest('tr').remove();
     });
 
-    // Salvar fornecedor e gerar JSON
-    $('#registrationForm').on('submit', function(event) {
-        event.preventDefault(); // Previne o envio padrão do formulário
+    // Visualizar anexo
+    $('#attachmentsTable').on('click', '.btn-info', function() {
+        let fileInput = $(this).closest('tr').find('input[type="file"]')[0];
+        if (fileInput.files.length > 0) {
+            let file = fileInput.files[0];
+            let url = URL.createObjectURL(file);
+            window.open(url, '_blank');
+        }
+    });
 
-        // Exibir modal de loading
-        $('#loadingModal').modal('show');
-
-        // Coleta os dados do formulário
-        const formData = {
-            razaoSocial: $('#razaoSocial').val(),
-            nomeFantasia: $('#nomeFantasia').val(),
-            cnpj: $('#cnpj').val(),
-            inscricaoEstadual: $('#inscricaoEstadual').val(),
-            inscricaoMunicipal: $('#inscricaoMunicipal').val(),
-            endereco: $('#endereco').val(),
-            contato: $('#contato').val(),
-            telefone: $('#telefone').val(),
-            email: $('#email').val(),
-            produtos: [],
-            anexos: []
-        };
-
-        // Coleta dados dos produtos
-        $('#productsTable tbody tr').each(function() {
-            const $row = $(this);
-            formData.produtos.push({
-                descricao: $row.find('.product-description').val(),
-                unidade: $row.find('.product-unit').val(),
-                quantidade: $row.find('.product-quantity').val(),
-                valorUnitario: $row.find('.product-unit-price').val(),
-                valorTotal: $row.find('.product-total').val()
-            });
-        });
-
-        // Coleta dados dos anexos
-        $('#attachmentsTable tbody tr').each(function() {
-            formData.anexos.push({
-                nome: $(this).find('td:first').text(),
-                url: $(this).find('.delete-attachment').data('file-url')
-            });
-        });
-
-        // Exemplo de como gerar JSON e exibir no console
-        console.log(JSON.stringify(formData, null, 2));
-
-        // Ocultar modal de loading
-        $('#loadingModal').modal('hide');
+    // Enviar formulário
+    $('#supplierForm').submit(function(event) {
+        event.preventDefault();
+        let formData = new FormData(this);
+        let jsonData = {};
+        formData.forEach((value, key) => { jsonData[key] = value });
+        console.log(JSON.stringify(jsonData));
+        alert('Fornecedor salvo com sucesso!');
     });
 });

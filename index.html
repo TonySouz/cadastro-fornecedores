@@ -1,27 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Fornecedores e Produtos</title>
-    <!-- Bootstrap CSS -->
-    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="css/styles.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Cadastro de Fornecedores e Produtos</h1>
-        <form id="registrationForm">
-            <!-- Cadastro do Fornecedor -->
-            <h2>Fornecedor</h2>
+    <div class="container mt-5">
+        <h2>Cadastro de Fornecedores e Produtos</h2>
+        <form id="supplierForm">
+            <h4>Dados do Fornecedor</h4>
             <div class="form-group">
                 <label for="companyName">Razão Social</label>
                 <input type="text" class="form-control" id="companyName" required>
             </div>
             <div class="form-group">
-                <label for="fantasyName">Nome Fantasia</label>
-                <input type="text" class="form-control" id="fantasyName" required>
+                <label for="tradeName">Nome Fantasia</label>
+                <input type="text" class="form-control" id="tradeName" required>
             </div>
             <div class="form-group">
                 <label for="cnpj">CNPJ</label>
@@ -34,6 +31,10 @@
             <div class="form-group">
                 <label for="municipalRegistration">Inscrição Municipal</label>
                 <input type="text" class="form-control" id="municipalRegistration">
+            </div>
+            <div class="form-group">
+                <label for="cep">CEP</label>
+                <input type="text" class="form-control" id="cep" required>
             </div>
             <div class="form-group">
                 <label for="address">Endereço</label>
@@ -51,73 +52,52 @@
                 <label for="email">E-mail</label>
                 <input type="email" class="form-control" id="email" required>
             </div>
-
-            <!-- Tabela de Produtos -->
-            <h2>Produtos</h2>
-            <div id="productsTable">
-                <!-- Linha de exemplo para produtos -->
-                <div class="product-item">
-                    <div class="form-group">
-                        <label for="productDescription">Descrição</label>
-                        <input type="text" class="form-control" class="productDescription" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="productUnit">Unidade de Medida</label>
-                        <input type="text" class="form-control" class="productUnit" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="productQuantity">Quantidade em Estoque</label>
-                        <input type="number" class="form-control" class="productQuantity" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="productUnitPrice">Valor Unitário</label>
-                        <input type="number" class="form-control" class="productUnitPrice" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="productTotalValue">Valor Total</label>
-                        <input type="text" class="form-control" class="productTotalValue" readonly>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-secondary" id="addProduct">Adicionar Produto</button>
-            </div>
-
-            <!-- Tabela de Anexos -->
-            <h2>Anexos</h2>
-            <div id="attachments">
-                <!-- Linha de exemplo para anexos -->
-                <div class="attachment-item">
-                    <input type="file" class="form-control" class="fileInput">
-                    <button type="button" class="btn btn-danger" onclick="removeAttachment(this)">Excluir</button>
-                    <button type="button" class="btn btn-info" onclick="viewAttachment(this)">Visualizar</button>
-                </div>
-                <button type="button" class="btn btn-secondary" id="addAttachment">Adicionar Anexo</button>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Salvar Fornecedor</button>
+            <h4>Produtos</h4>
+            <table class="table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Unidade de Medida</th>
+                        <th>Quantidade em Estoque</th>
+                        <th>Valor Unitário</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" required></td>
+                        <td><input type="text" class="form-control" required></td>
+                        <td><input type="number" class="form-control" required></td>
+                        <td><input type="number" class="form-control" required></td>
+                        <td><input type="number" class="form-control" readonly></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary" id="addProduct">Adicionar Produto</button>
+            <h4>Anexos</h4>
+            <table class="table" id="attachmentsTable">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="file" class="form-control" required></td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm">Excluir</button>
+                            <button type="button" class="btn btn-info btn-sm">Visualizar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary" id="addAttachment">Incluir Anexo</button>
+            <button type="submit" class="btn btn-success mt-3">Salvar Fornecedor</button>
         </form>
     </div>
-
-    <!-- Modal de Loading -->
-    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="text-center">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Carregando...</span>
-                        </div>
-                        <p>Aguarde enquanto enviamos os dados...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- jQuery -->
-    <script src="lib/jquery/jquery-3.5.1.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="js/scripts.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
