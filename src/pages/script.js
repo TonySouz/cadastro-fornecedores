@@ -30,7 +30,7 @@ $(document).ready(function() {
     // Função para adicionar um novo produto
     $('#addProduto').on('click', function() {
         const novoProduto = `
-            <div class="row">
+            <div class="row produtoRow">
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="descricao">Descrição</label>
@@ -61,8 +61,35 @@ $(document).ready(function() {
                         <input type="number" class="form-control valorTotal" readonly>
                     </div>
                 </div>
+                <div class="col-md-12 mt-2">
+                    <button type="button" class="btn btn-danger removerProduto"><i class="bi bi-trash3-fill"></i> Remover Produto</button>
+                </div>
             </div>`;
         $('#produtosContainer').append(novoProduto);
+    });
+
+    // Função para adicionar um novo anexo
+    $('#addAnexo').on('click', function() {
+        const novoAnexo = `
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <label for="anexo">Anexo</label>
+                        <input type="file" class="form-control anexo">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger excluirAnexo"><i class="bi bi-trash3-fill"></i> Excluir</button>
+                    <button type="button" class="btn btn-primary visualizarAnexo"><i class="bi bi-eye"></i> Visualizar</button>
+                </div>
+            </div>`;
+        $('#anexosContainer').append(novoAnexo);
+    });
+    
+
+    // Função para remover um produto
+    $('#produtosContainer').on('click', '.removerProduto', function() {
+        $(this).closest('.produtoRow').remove();
     });
 
     // Função para manipulação de anexos
@@ -77,6 +104,7 @@ $(document).ready(function() {
 
     $('#anexosContainer').on('click', '.excluirAnexo', function() {
         $(this).closest('.row').remove();
+        // Opcional: Verifica se há anexos restantes e exibe uma mensagem ou mantém o botão visível
     });
 
     $('#anexosContainer').on('click', '.visualizarAnexo', function() {
@@ -89,12 +117,14 @@ $(document).ready(function() {
         }
     });
 
+    
+
     // Função para manipular o envio do formulário
     $('#fornecedorForm').on('submit', function(e) {
         e.preventDefault();
 
         const produtos = [];
-        $('#produtosContainer .row').each(function() {
+        $('#produtosContainer .produtoRow').each(function() {
             const descricao = $(this).find('.descricao').val();
             const unidade = $(this).find('.unidade').val();
             const quantidade = $(this).find('.quantidade').val();
