@@ -1,22 +1,22 @@
 $(document).ready(function() {
+
     // Função para preencher o endereço automaticamente usando a API do ViaCEP
-    $('#cep').on('blur', function() {
-        const cep = $(this).val().replace(/\D/g, '');
-        if (cep !== "") {
-            const validacep = /^[0-9]{8}$/;
-            if(validacep.test(cep)) {
-                $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(dados) {
-                    if (!("erro" in dados)) {
-                        $('#endereco').val(`${dados.logradouro}, ${dados.bairro}, ${dados.localidade} - ${dados.uf}`);
-                    } else {
-                        alert("CEP não encontrado.");
+    $('endereco').on('input', function() {
+        let query = $(this).val();
+        if (query.length > 0.1) {
+            $.ajax({
+                url: `https://viacep.com.br/ws/${encodeURIComponent(query)}/json/`,
+                dataType: 'json',
+                success: function(data) {
+                    if (data && data.logradouro) {
+                        $('#endereco').val(data.logradouro);
+                        // Preencher outros campos se necessário
                     }
-                });
-            } else {
-                alert("Formato de CEP inválido.");
-            }
+                }
+            });
         }
     });
+
 
     // Função para calcular o valor total do produto
     $('#produtosContainer').on('input', '.quantidade, .valorUnitario', function() {
@@ -26,6 +26,7 @@ $(document).ready(function() {
         const valorTotal = quantidade * valorUnitario;
         $row.find('.valorTotal').val(valorTotal.toFixed(2));
     });
+
 
     // Função para adicionar um novo produto
     $('#addProduto').on('click', function() {
@@ -68,6 +69,7 @@ $(document).ready(function() {
         $('#produtosContainer').append(novoProduto);
     });
 
+
     // Função para adicionar um novo anexo
     $('#addAnexo').on('click', function() {
         const novoAnexo = `
@@ -104,7 +106,6 @@ $(document).ready(function() {
 
     $('#anexosContainer').on('click', '.excluirAnexo', function() {
         $(this).closest('.row').remove();
-        // Opcional: Verifica se há anexos restantes e exibe uma mensagem ou mantém o botão visível
     });
 
     $('#anexosContainer').on('click', '.visualizarAnexo', function() {
@@ -117,7 +118,6 @@ $(document).ready(function() {
         }
     });
 
-    
 
     // Função para manipular o envio do formulário
     $('#fornecedorForm').on('submit', function(e) {

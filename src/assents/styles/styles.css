@@ -55,7 +55,7 @@ h2 {
 
 /* Botões */
 .btn {
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 0.5rem 1rem;
 }
 
@@ -95,12 +95,6 @@ h2 {
     background-color: #c82333;
 }
 
-/* Botões de grupo */
-.btn-group {
-    display: flex;
-    gap: 10px;
-}
-
 /* Container de anexos */
 .anexos-container {
     margin-top: 20px;
@@ -121,7 +115,7 @@ h2 {
 /* Botão de adicionar anexo */
 #addAnexo {
     display: block;
-    width: 100%;
+    width: 15%;
 }
 
 /* Layout do formulário */
